@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TRACE — Digital Evidence Intelligence</title>
+  <meta name="description" content="From scattered evidence to one traceable incident.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080B10'/%3E%3Cpath d='M14 46 L28 32 L40 39 L52 20' stroke='%2322D3EE' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='14' cy='46' r='4.5' fill='%2322D3EE'/%3E%3Ccircle cx='28' cy='32' r='4.5' fill='%2322D3EE'/%3E%3Ccircle cx='40' cy='39' r='4.5' fill='%2322D3EE'/%3E%3Ccircle cx='52' cy='20' r='4.5' fill='%2322D3EE'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Critical path theme (applied before styles.css) to avoid a white flash. */
+    :root { color-scheme: dark; }
+    html, body { background: #05070A; margin: 0; }
+    .trace-boot-error {
+      max-width: 34rem; margin: 4rem auto; padding: 2rem;
+      border: 1px solid rgba(248, 113, 113, .35); border-radius: 14px;
+      background: #0A0E14; color: #E8EDF5; font-family: Inter, system-ui, sans-serif;
+    }
+    .trace-boot-error h1 { font-size: 18px; margin: 0 0 10px; color: #F87171; }
+    .trace-boot-error p { color: #94A0B4; font-size: 13.5px; line-height: 1.6; margin: 0 0 8px; }
+    .trace-boot-error .trace-boot-hint { color: #5C6779; font-size: 12.5px; }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="drawer-root"></div>
+  <div id="toast-root"></div>
+  <noscript><p style="font-family:Inter,system-ui,sans-serif;color:#E8EDF5;background:#0A0E14;max-width:34rem;margin:3rem auto;padding:2rem;border:1px solid #223;border-radius:14px;text-align:center;">TRACE requires JavaScript. Please enable it to open the evidence workspace.</p></noscript>
+  <script>
+    /* Boot guard: surface only real script errors, and only if the app never
+       mounts. Missing optional resources (e.g. fonts) must not blank the app. */
+    (function () {
+      function fail(msg) {
+        if (window.__TRACE_BOOT__) return;
+        var el = document.getElementById('app');
+        if (!el || el.dataset.bootErr) return;
+        el.dataset.bootErr = '1';
+        el.innerHTML = '<div class="trace-boot-error"><h1>TRACE failed to start</h1><p>'
+          + String(msg || 'Script error').replace(/[&<>"]/g, function (c) {
+              return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            })
+          + '</p><p class="trace-boot-hint">Check that these load in order: js/services/*.js, then js/app.js.</p></div>';
+      }
+      window.addEventListener('error', function (e) {
+        /* Ignore resource-load errors (img/script/link); only handle runtime errors. */
+        if (e && e.target && e.target !== window && e.target.tagName) return;
+        fail(e && e.message);
+      }, true);
+      window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          if (!window.__TRACE_BOOT__ && document.getElementById('app') && !document.getElementById('app').firstChild) {
+            fail('Application scripts did not run.');
+          }
+        }, 1200);
+      });
+    })();
+  </script>
+  <script src="js/services/redactionService.js"></script>
+  <script src="js/services/normalizeService.js"></script>
+  <script src="js/services/extractionService.js"></script>
+  <script src="js/services/contradictionService.js"></script>
+  <script src="js/services/duplicateService.js"></script>
+  <script src="js/services/timelineService.js"></script>
+  <script src="js/services/reportService.js"></script>
+  <script src="js/services/aiProvider.js"></script>
+  <script src="js/services/aiService.js"></script>
+  <script src="js/services/ocrService.js"></script>
+  <script src="js/services/evidenceParser.js"></script>
+  <script src="js/services/evidenceAnalyzer.js"></script>
+  <script src="js/services/evidenceService.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
